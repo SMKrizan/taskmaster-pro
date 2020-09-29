@@ -43,6 +43,7 @@ var saveTasks = function () {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
 
+// enable draggable/sortable features
 $(".card .list-group").sortable({
   connectWith: $(".card .list-group"),
   scroll: false,
@@ -178,9 +179,6 @@ $(".list-group").on("blur", "input[type='text']", function () {
   $(this).replaceWith(taskSpan);
 });
 
-
-
-
 // modal was triggered
 $("#task-form-modal").on("show.bs.modal", function () {
   // clear values
@@ -213,6 +211,10 @@ $("#task-form-modal .btn-primary").click(function () {
 
     saveTasks();
   }
+});
+
+$("#modalDueDate").datepicker({
+  minDate: 1
 });
 
 $("#trash").droppable({
