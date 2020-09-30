@@ -13,6 +13,9 @@ var createTask = function (taskText, taskDate, taskList) {
   // append span and p element to parent li
   taskLi.append(taskSpan, taskP);
 
+  // check due date
+  auditTask(taskLi);
+
   // append to ul list on the page
   $("#list-" + taskList).append(taskLi);
 };
@@ -76,6 +79,7 @@ $(".card .list-group").sortable({
       date: date
     });
   });
+
   // trim down list's ID to match object property
   var arrName = $(this)
   .attr("id")
@@ -173,6 +177,7 @@ $(".list-group").on("change", "input[type='text']", function () {
   // get the task's position in the list of other li elements
   var index = $(this)
     .closest(".list-group-item")
+    // solution from LA
     .index();
 
   // update task in array and save to local storage
@@ -186,7 +191,30 @@ $(".list-group").on("change", "input[type='text']", function () {
 
   // replace input with span element
   $(this).replaceWith(taskSpan);
+
+  // pass task's <li> element into auditTask() to check new due date
+  auditTask($(taskSpan).closest(".list-group-item"));
 });
+
+var auditTask = function(taskEl) {
+  console.log(taskEl);
+  // get date from task element
+  var date = $(taskEl).find("span").text().trim();
+
+  // convert to moment object at 5:00pm
+  var time = moment(date, "L").set("hour", 17);
+
+  // remove any old classes from element
+  $(taskEl).removeClass("list-group-item-warning list-group-item-danger");
+
+  // apply new class if task is near/over due date
+  if (moment().isAfter(time)) {
+    $(taskEl).addClass("list-group-item-danger");
+  }
+  else if (Math.abs(moment().diff(time, "days")) <= 2) {
+    $(taskEl).addClass("list-group-item-warning");
+  }
+}
 
 // modal was triggered
 $("#task-form-modal").on("show.bs.modal", function () {
